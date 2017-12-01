@@ -80,7 +80,7 @@ class Decision(Point):
     """For decision points
     Usage: decision(text, options)
     text = text to be formatted
-    options = dictionary of options 
+    options = dictionary of options
     that the player has and the resulting
     point to go to for each option
 

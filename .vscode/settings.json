@@ -1,0 +1,9 @@
+{
+    "python.pythonPath": "C:\\Users\\power\\AppData\\Local\\Programs\\Python\\Python36-32\\python.exe",
+    "python.unitTest.pyTestArgs": [
+        "tests"
+    ],
+    "python.unitTest.pyTestEnabled": true,
+    "python.unitTest.unittestEnabled": false,
+    "python.unitTest.nosetestsEnabled": false
+}

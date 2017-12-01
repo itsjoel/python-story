@@ -1,7 +1,7 @@
 import setuptools
 
 setuptools.setup(
-    name="python-story",
+    name="python_story",
     version="0.1.0",
     url="https://github.com/itsjoel/python-story",
 
@@ -14,6 +14,9 @@ setuptools.setup(
     packages=setuptools.find_packages(),
 
     install_requires=["termcolor>1.0.0"],
+
+    setup_requires = ['pytest-runner'], #https://docs.pytest.org/en/latest/goodpractices.html#integrating-with-setuptools-python-setup-py-test-pytest-runner
+    tests_require = ['pytest', 'pytest-mock'],
 
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',

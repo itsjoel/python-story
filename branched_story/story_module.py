@@ -1,43 +1,14 @@
 from __future__ import print_function
-from builtins import input
-from builtins import object
-from termcolor import colored, cprint
+
+from builtins import input, object
 from time import sleep
 
+from termcolor import colored, cprint
 
-class ParsedFunction(object):
-    function = False
-    arguments = ()
+from emb_text.embellish_parse import *
 
-    def __init__(self, function, arguments=None):  # Take the functions and the arguments
-        self.function = function
-        if arguments != None:
-            self.arguments = arguments
-
-    def __call__(self):  # Run then when it is time
-        if self.arguments:
-            return self.function(self.arguments)
-        else:
-            return self.function()
-
-
-class ParsedText(object):  # Holds parsed text
-    text = ""
-    text_animation = False
-
-    def __init__(self, text, animation=False):
-        self.text = text
-        self.text_animation = animation
-
-    def __call__(self):  # Display the text
-        if self.text_animation:
-            if self.text_animation == "placeholder":
-                pass
-            else:
-                pass
-        else:
-            print(self.text)
-
+def my_input():
+    return input(colored('> ', attrs=["blink"]))
 
 class Point(object):  # Base for both story points and decision points
     parsed_list = []
@@ -52,20 +23,7 @@ class Point(object):  # Base for both story points and decision points
 
     def __parse__(self, text):
         """This parses the text into blocks of text and functions, then formats the text"""
-        raw_list = text.split('|')  # pipes break the text into blocks
-        parsed_list = []  # not self.parsed_list
-        for raw_block in raw_list:  # go though each raw block
-            if any(x in raw_block for x in '<>'):  # If there are function tokens in the text,
-                if '<' in raw_block:  # <n> means sleep for n seconds
-                    sleep_time = float(raw_block.strip('<>'))
-                    # Make it into a parsed function that sleeps for that many seconds
-                    parsed_list += [ParsedFunction(sleep, sleep_time)]
-            else:  # if these tokens aren't there, it's just text that needs formatting
-                # may add in text animations later, but not now
-                formatted_text = self.__format__(raw_block)  # format the text
-                # add it to the list
-                parsed_list += [ParsedText(formatted_text, False)]
-        return parsed_list
+        return embellish_text(text)
 
     def __show__(self):
         """Displays the content of this point"""
@@ -108,7 +66,7 @@ class Decision(Point):
         """Ask the player their choice"""
         success = False
         while not success:  # Keep going until you get an answer
-            user_input = input('>').upper().strip()  # removes whitespace
+            user_input = my_input().upper().strip() # removes whitespace
             for choice in self.options:
                 if user_input == choice[0:len(user_input)].upper():
                     """if the letters in the input match the
@@ -232,66 +190,3 @@ class Book(object):
 
     def test_point(self, name):  # just run one point
         return self.points[name].do_point()
-
-
-def format_text(text):
-    """Formats text given to it
-    % makes text red and bold
-    * makes text bold
-    _ make text underlined
-    @ makes text blink
-    ` escapes characters (so they don't make the text do anything)
-    """
-    ftext_str = ""  # init variable for holding formatted text
-    text_key = False  # doesn't start key colored
-    text_bold = False
-    text_under = False
-    text_blink = False
-    text_escape = False
-    for char in text:
-        text_attrs = []
-        text_color = ''
-        if char == '%' and text_escape != True:  # a % makes it either turn red or stop being red
-            text_key = not text_key  # by inverting it
-        elif char == '*' and text_escape != True:
-            text_bold = not text_bold
-        elif char == '_' and text_escape != True:
-            text_under = not text_under
-        elif char == '@' and text_escape != True:
-            text_blink = not text_blink
-        elif char == '`' and (text_escape != True):
-            pass
-        else:
-            if text_key:
-                text_attrs += ['bold']
-                text_color = 'red'
-                char = char.upper()
-            if text_bold:
-                text_attrs += ['bold']
-            if text_under:
-                text_attrs += ["underline"]
-            if text_blink:
-                text_attrs += ["blink"]
-            if text_color:
-                ftext_str += colored(char, text_color, attrs=text_attrs)
-            else:
-                ftext_str += colored(char, attrs=text_attrs)
-        if char == '`' or text_escape:
-            text_escape = not text_escape
-    return ftext_str
-
-
-def suite():
-    """
-    For testing the program
-    """
-    __test__ = Book("Test Book", "Jon Doe")
-    __test__.add_story("start", "@Blinking Text@ _Italic Text_ *Bold Text* %Decision Text% `%Escaped Text`% ``Escaped Escaped Text`` |Sleeping for 3 seconds... |<3>| The next decision point will ask you to make a _*decision*_ or a _*choice*_.", "dorc")
-    __test__.add_decision("dorc", "Are you going to make a %DECISION% or a %CHOICE%?", {
-                          'DECISION': 'story_d', 'CHOICE': 'story_c'})
-    __test__.add_story(
-        "story_d", "This is the end of the test. You chose to make a %Decision%", False)
-    __test__.add_story(
-        'story_c', "This is the end of the test. You decided to make a %Choice%", False)
-    __test__.set_start_point("start")
-    __test__.tell()

@@ -37,5 +37,7 @@ nosetests.xml
 
 #tox
 .tox
-.egg-info
+*.egg-info
 scratch.txt
+.cache
+.vscode

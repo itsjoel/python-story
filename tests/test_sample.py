@@ -4,12 +4,10 @@ import branched_story as bs
 import emb_text as et
 
 
-def test_example():
-    assert 1 == 1
-
-
 def test_path_following(mocker, capfd):
     mocker.patch('branched_story.story_module.my_input', lambda: "a_o")
+    mocker.patch('emb_text.embellish_parse.colored', lambda text, *args, **kwargs: text)
+    mocker.patch('branched_story.story_module.colored', lambda text, *args, **kwargs: text)
     __test__ = bs.Book("Test Book", "Jon Doe")
     __test__.add_story("start", "Story Text 1", "dec")
     __test__.add_decision("dec", "Decision: A or B", {
@@ -21,5 +19,5 @@ def test_path_following(mocker, capfd):
     __test__.set_start_point("start")
     __test__.tell()
     out, err = capfd.readouterr()
-    print(out, err)
+    assert out == """===TEST BOOK===\nby Jon Doe.\nStory Text 1\nDecision: A or B\nEnd Story Text 2B\n====END====\n"""
     

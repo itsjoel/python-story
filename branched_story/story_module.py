@@ -146,7 +146,7 @@ class Book(object):
         self.__end__()  # once it's finished, show the end graphic
 
     def __end__(self):  # end graphic
-        print(colored("====END====", "white", attrs=["bold"]))
+        print(colored("====END====", attrs=["bold"]))
 
     def add_story(self, name, text, next_point):  # add story point
         self.points[name] = Story(text, next_point)
@@ -181,8 +181,8 @@ class Book(object):
         return author_text  # return
 
     def __title__(self):  # display title graphic
-        print(colored('===', 'white', attrs=['bold']) + colored(self.title.upper(), 'red', attrs=[
-              'bold']) + colored('===', 'white', attrs=['bold']))  # white ===, red title, white ===
+        print(colored('===', attrs=['bold']) + colored(self.title.upper(), 'red', attrs=[
+              'bold']) + colored('===', attrs=['bold']))  # white ===, red title, white ===
         print('by', self.__author_text__())  # get author text
 
     def remove_point(self, name):  # remove a point

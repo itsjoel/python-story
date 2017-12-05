@@ -1,8 +1,7 @@
 """MUFFINTEXT - MarkUp For Functions IN TEXT"""
-from muffintext.muffin_types import *
-from muffintext.muffin_parse import *
+from .muffinsequence import MuffinSequence
 
-__version__ = '0.0.2'
+__version__ = '0.0.1'
 __author__ = 'Joel Newman <me@itsjoel.online>'
-__all__ = []
+# __all__ = []
 

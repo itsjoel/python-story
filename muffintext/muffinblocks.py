@@ -1,4 +1,4 @@
-class StoredFunction(object):
+class MuffinBlockFunction(object):
     function = False
     arguments = ()
 
@@ -14,7 +14,7 @@ class StoredFunction(object):
             return self.function()
 
 
-class StoredText(object):  # Holds parsed text
+class MuffinBlockText(object):  # Holds parsed text
     text = ""
     text_animation = False
 

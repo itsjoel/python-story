@@ -1,7 +1,6 @@
 from time import sleep
-from muffintext.muffin_types import *
 from termcolor import colored
-
+from .muffinblocks import MuffinBlockFunction, MuffinBlockText
 
 def format_text(text):
     """Formats text given to it
@@ -50,19 +49,20 @@ def format_text(text):
     return ftext_str
 
 
-def bake(text):
+def get_muffin_block_list(text):
     """This parses the text into blocks of text and functions, then formats the text"""
-    raw_list = text.split('|')  # pipes break the text into blocks
-    emb_list = []  # not self.parsed_list
-    for raw_block in raw_list:  # go though each raw block
+    raw_blocks = text.split('|')  # pipes break the text into blocks
+    muffin_blocks = []  # not self.parsed_list
+    for raw_block in raw_blocks:  # go though each raw block
         if any(x in raw_block for x in '<>'):  # If there are function tokens in the text,
             if '<' in raw_block:  # <n> means sleep for n seconds
                 sleep_time = float(raw_block.strip('<>'))
                 # Make it into a parsed function that sleeps for that many seconds
-                emb_list += [StoredFunction(sleep, sleep_time)]
+                muffin_blocks += [MuffinBlockFunction(sleep, sleep_time)]
         else:  # if these tokens aren't there, it's just text that needs formatting
             # may add in text animations later, but not now
             formatted_text = format_text(raw_block)  # format the text
             # add it to the list
-            emb_list += [StoredText(formatted_text, False)]
-    return emb_list
+            muffin_blocks += [MuffinBlockText(formatted_text, False)]
+    return muffin_blocks
+        

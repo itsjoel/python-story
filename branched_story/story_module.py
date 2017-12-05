@@ -7,92 +7,61 @@ from time import sleep
 
 from termcolor import colored, cprint
 
-import muffintext 
+from muffintext import MuffinSequence
 
 
 def get_user_input(prompt='> ', blink=True):
     """Prompts user for input. 
-    
+
     Used mainly because it makes testing easier.
-    
+
     Parameters
     ----------
     prompt : str, optional
         The text that appears next to the prompt. Defaults to >
     blink : bool, optional
         Whether the text blinks or not. Defaults to True
-    
+
     Returns
     -------
     string
         The user's response
     """
-    return input(colored('> ', attrs=["blink"])) #Makes > graphic
+    if blink:
+        return input(colored(prompt, attrs=["blink"]))
+    else:
+        return input(colored(prompt))  # Makes > graphic
 
 
 class Point(object):
-    __parsed_list__ = []
+    """Generic point/node in the interactive story.
+
+    On initialization, formats inputted text using muffintext.bake().
+    When called, displays the resulting muffintext, then returns next_point.
+
+    Parameters
+    ----------
+    text : string, optional
+        The text content of this point in the story.
+    next_point : string, optional
+        The next point in the narrative. Defaults to None.
+    """
+    __muffin_content__ = object
     next_point = None
 
     def __init__(self, text=None, next_point=None):
-        """Generic point/node in the interactive story.
-        
-        On initialization, formats inputted text using muffintext.bake().
-        When called, displays the resulting muffintext, then returns next_point.
-        
-        Parameters
-        ----------
-        text : string, optional
-            The text content of this point in the story.
-        next_point : string, optional
-            The next point in the narrative. Defaults to None.
-        """
         if text != None:
-        self.__parsed_list__ = self.__parse__(text) #Parse the raw text into muffinPtext
+            # Parse the raw text into muffinPtext
+            self.__muffin_content__ = MuffinSequence.bake(text)
         else:
-            self.__parsed_list__ = False
+            self.__muffin_content__ = False
         self.next_point = next_point
-
-    def __parse__(self, text):
-        """Alias for muffintext.bake(text).
-        
-        Usage
-        -----
-        Muffintext can contain both "Formatted Text", meaning text with colors and styles, and "Parsed Functions", functions embedded in the muffintext. The boundry between these two kinds of content is denoted using the pipe (|) Control Token. The tokens are described below.
-        
-        Control
-        -------
-        |: New block.
-        
-        Functions
-        ---------
-        <x>: time.sleep(x)
-        
-        Formatting
-        ----------
-        % : Makes text red and bold. Used for choice keywords.
-        * : Makes text bold.
-        _ : Makes text italic.
-        @ : Makes text blink.
-        ` : Escapes formatting tokens, but not function tokens (yet).
-        
-        Parameters
-        ----------
-        text : string
-            Raw, unformatted, unparsed text
-        
-        Returns
-        -------
-        list
-            Muffintext-formatted list containing functions and formatted text.
-        """
-        return muffintext.bake(text)
 
     def __call__(self):
         """Executes the point
-        
+
         Displays the content of the post, then returns next point. If it returns False, then this is an end point.
-        
+
         Returns
         -------
         string
@@ -103,20 +72,19 @@ class Point(object):
 
     def __show__(self):
         """Displays post content
-        
+
         Displays the content of the post by iterating through the list and executing each block.
         """
-        if self.__parsed_list__:
-            for parsed_block in self.__parsed_list__:  # go through each parsed block
-                parsed_block()  # Excecute them, either by printing or by calling
+        if self.__muffin_content__:
+            self.__muffin_content__()
         else:
             pass
 
     def __go__(self):
         """Returns the next point
-        
+
         Returns the next point as determined by whatever the next_point variable has been sent to. If it's false, then this is an end point for the story.
-        
+
         Returns
         -------
         string
@@ -126,39 +94,39 @@ class Point(object):
 
 
 class Decisionpt(Point):
+    """For decisions in the story.
+
+    For parts in the story where the path forks, and the reader can directly decide which path to follow. This point will display the content of the post and then continuously ask the player for text input until it can be understood by fuzzy matching. The fuzzy matching tests whether the string that the player types in, once stripped of leading or following whitespace, case-insensitively matches any of the decision keywords, when each keyword is truncated to the length of the user input.
+
+    Usage
+    -----
+    The `text` content of the post should be short and directly or indirectly ask the player to decide between a number of choices, which all should be mentioned. Choices are chosen by the player by typing in the choice's **keyword**. Each keyword should be in the `text` of the post using "choice" formatting, which is done using the `%` tag, and in ALL CAPS.
+
+    Parameters
+    ----------
+    text : string
+        The text content of the point. Will be formatted using muffintext.bake(). Should be short and contain the keywords for the player to type in ALL CAPS using muffintext's "choice" formatting, which makes the text red and bold and uses the `%` tag.
+    options : dict
+        A dictionary containing the options that the player has in this format: {"choice_keyword" : "name_of_point_to_go_to_if_this_point_is_chosen",...} 
+
+    Example
+    -------
+    ```
+    ...
+    "decisionfruit": Decisionpt("Do you eat the %APPLE%, or the %PEAR%?", {"APPLE": "choseapple", "PEAR": "chosepear"}),
+    ...
+    """
     options = {}
 
     def __init__(self, text, options):
-        """For decisions in the story.
-        
-        For parts in the story where the path forks, and the reader can directly decide which path to follow. This point will display the content of the post and then continuously ask the player for text input until it can be understood by fuzzy matching. The fuzzy matching tests whether the string that the player types in, once stripped of leading or following whitespace, case-insensitively matches any of the decision keywords, when each keyword is truncated to the length of the user input.
-        
-        Usage
-        -----
-        The `text` content of the post should be short and directly or indirectly ask the player to decide between a number of choices, which all should be mentioned. Choices are chosen by the player by typing in the choice's **keyword**. Each keyword should be in the `text` of the post using "choice" formatting, which is done using the `%` tag, and in ALL CAPS.
-        
-        Parameters
-        ----------
-        text : string
-            The text content of the point. Will be formatted using muffintext.bake(). Should be short and contain the keywords for the player to type in ALL CAPS using muffintext's "choice" formatting, which makes the text red and bold and uses the `%` tag.
-        options : dict
-            A dictionary containing the options that the player has in this format: {"choice_keyword" : "name_of_point_to_go_to_if_this_point_is_chosen",...} 
-        
-        Example
-        -------
-        ```
-        ...
-        "decisionfruit": Decisionpt("Do you eat the %APPLE%, or the %PEAR%?", {"APPLE": "choseapple", "PEAR": "chosepear"}),
-        ...
-        """
         Point.__init__(self, text)
         self.options = options
 
     def __call__(self):
         """Execute the decision point
-        
+
         Displays the text content of the point, then prompts the player for text input. If the player inputs something that can be fuzzy matched to a keyword (a key in the `options` dict), then the point returns the name of point to go to based on the player's answer. Otherwise, the point will remind the player of their options, and then will ask for input again.
-        
+
         Returns
         -------
         string
@@ -171,9 +139,9 @@ class Decisionpt(Point):
 
     def __prompt__(self):
         """Prompts the player to enter their choice.
-        
+
         If the player inputs something that can be fuzzy matched to a keyword (a key in the `options` dict), then it returns the name of point to go to based on the player's answer. Otherwise, it will remind the player of their options, and then will ask for input again.
-        
+
         Returns
         -------
         string
@@ -201,15 +169,15 @@ class Decisionpt(Point):
 
 class Storypt(Point):
     """For story points.
-    
+
     This is for story points, which contain only text content. The `text` content of the story will be displayed, then it will return `next_point`.
-    
-    
+
+
     Parameters
     ----------
     text : string
         The text of the story, formatted using the Muffintext format
-        
+
     next_point : string
         The name of the next point in the story/The key chorresponding to the next point as in the `points` dictionary in the `Book` object.
     """
@@ -220,7 +188,7 @@ class Storypt(Point):
 
 class Book(object):
     """Holds interactive fiction stories
-    
+
     This object holds all the points and some metadata of the story, and can be called in order to display the story for a reader.
 
     Parameters
@@ -275,7 +243,7 @@ class Book(object):
 
     def add_story(self, name, text, next_point):  # add story point
         """Add a story point
-        
+
         Parameters
         ----------
         name : string
@@ -289,7 +257,7 @@ class Book(object):
 
     def add_decision(self, name, text, options):  # add decision point
         """Add a decision point
-        
+
         Parameters
         ----------
         name : string
@@ -305,7 +273,7 @@ class Book(object):
         """Set start point of the story.
 
         The start point is the name of the first point in the story, AKA the key corresponding to the first point in the `points` dict.
-        
+
         Parameters
         ----------
         name : string
@@ -315,7 +283,7 @@ class Book(object):
 
     def __author_text__(self):  # generate the "By Jon Doe and Don Joe" text
         """Creates author sentence
-        
+
         Returns
         -------
         string
@@ -352,7 +320,7 @@ class Book(object):
 
     def remove_point(self, name):  # remove a point
         """Removes a point from the story.
-        
+
         Parameters
         ----------
         name : string
@@ -362,12 +330,12 @@ class Book(object):
 
     def test_point(self, name):  # just run one point
         """Runs a single point.
-        
+
         Parameters
         ----------
         name : string
             Name of the point
-        
+
         Returns
         -------
         string

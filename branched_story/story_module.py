@@ -7,7 +7,7 @@ from time import sleep
 
 from termcolor import colored, cprint
 
-from muffintext import MuffinSequence
+from muffintext import *
 
 
 def get_user_input(prompt='> ', blink=True):

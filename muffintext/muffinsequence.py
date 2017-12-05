@@ -1,4 +1,5 @@
 from .muffin_parse import get_muffin_block_list
+
 class MuffinSequence(object):
     __muffin_blocks__ = []
 

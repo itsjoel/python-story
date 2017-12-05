@@ -4,7 +4,7 @@ import branched_story as bs
 
 def test_path_following(mocker, capfd):
     mocker.patch('branched_story.story_module.get_user_input', lambda: "a_o")
-    mocker.patch('emb_text.embellish_parse.colored',
+    mocker.patch('muffintext.muffin_parse.colored',
                  lambda text, *args, **kwargs: text)
     mocker.patch('branched_story.story_module.colored',
                  lambda text, *args, **kwargs: text)

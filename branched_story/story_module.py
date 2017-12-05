@@ -1,4 +1,4 @@
-"""Summary
+"""This module contains everything you need for making a simple branching story.
 """
 from __future__ import print_function
 
@@ -7,7 +7,7 @@ from time import sleep
 
 from termcolor import colored, cprint
 
-from emb_text.embellish_parse import embellish_text
+import muffintext 
 
 
 def get_user_input(prompt='> ', blink=True):
@@ -37,8 +37,8 @@ class Point(object):
     def __init__(self, text=None, next_point=None):
         """Generic point/node in the interactive story.
         
-        On initialization, formats inputted text using embellish_text().
-        When called, displays the embellished text, then returns next_point.
+        On initialization, formats inputted text using muffintext.bake().
+        When called, displays the resulting muffintext, then returns next_point.
         
         Parameters
         ----------
@@ -48,17 +48,17 @@ class Point(object):
             The next point in the narrative. Defaults to None.
         """
         if text != None:
-            self.__parsed_list__ = self.__parse__(text) #Parse the raw text into embellished text
+        self.__parsed_list__ = self.__parse__(text) #Parse the raw text into muffinPtext
         else:
             self.__parsed_list__ = False
         self.next_point = next_point
 
     def __parse__(self, text):
-        """Alias for embellish_text(text).
+        """Alias for muffintext.bake(text).
         
         Usage
         -----
-        Embellised Content (working name) can contain both "Formatted Text", meaning text with colors and styles, and "Parsed Functions", functions embedded in the Embellished Content. The boundry between these two kinds of content is denoted using the pipe (|) Control Token. The tokens are described below.
+        Muffintext can contain both "Formatted Text", meaning text with colors and styles, and "Parsed Functions", functions embedded in the muffintext. The boundry between these two kinds of content is denoted using the pipe (|) Control Token. The tokens are described below.
         
         Control
         -------
@@ -79,19 +79,19 @@ class Point(object):
         Parameters
         ----------
         text : string
-            Raw, unformatted, unparsed, unembellished text
+            Raw, unformatted, unparsed text
         
         Returns
         -------
         list
-            Embellished (parsed) list containing functions and formatted text.
+            Muffintext-formatted list containing functions and formatted text.
         """
-        return embellish_text(text)
+        return muffintext.bake(text)
 
     def __call__(self):
         """Executes the point
         
-        Displays the Embellished Content of the post, then returns next point. If it returns False, then this is an end point.
+        Displays the content of the post, then returns next point. If it returns False, then this is an end point.
         
         Returns
         -------
@@ -104,7 +104,7 @@ class Point(object):
     def __show__(self):
         """Displays post content
         
-        Displays the Embellished Content (working name) of the post by iterating through the list and executing each block.
+        Displays the content of the post by iterating through the list and executing each block.
         """
         if self.__parsed_list__:
             for parsed_block in self.__parsed_list__:  # go through each parsed block
@@ -131,7 +131,7 @@ class Decisionpt(Point):
     def __init__(self, text, options):
         """For decisions in the story.
         
-        For parts in the story where the path forks, and the reader can directly decide which path to follow. This point will display the Embellished Content (working name) and then continuously ask the player for text input until it can be understood by fuzzy matching. The fuzzy matching tests whether the string that the player types in, once stripped of leading or following whitespace, case-insensitively matches any of the decision keywords, when each keyword is truncated to the length of the user input.
+        For parts in the story where the path forks, and the reader can directly decide which path to follow. This point will display the content of the post and then continuously ask the player for text input until it can be understood by fuzzy matching. The fuzzy matching tests whether the string that the player types in, once stripped of leading or following whitespace, case-insensitively matches any of the decision keywords, when each keyword is truncated to the length of the user input.
         
         Usage
         -----
@@ -140,7 +140,7 @@ class Decisionpt(Point):
         Parameters
         ----------
         text : string
-            The text content of the point. Will be formatted using embellish_text(). Should be short and contain the keywords for the player to type in ALL CAPS using emb_text's "choice" formatting, which makes the text red and bold and uses the `%` tag.
+            The text content of the point. Will be formatted using muffintext.bake(). Should be short and contain the keywords for the player to type in ALL CAPS using muffintext's "choice" formatting, which makes the text red and bold and uses the `%` tag.
         options : dict
             A dictionary containing the options that the player has in this format: {"choice_keyword" : "name_of_point_to_go_to_if_this_point_is_chosen",...} 
         
@@ -208,7 +208,7 @@ class Storypt(Point):
     Parameters
     ----------
     text : string
-        The text of the story, formatted using the Embellished Content format (working name)
+        The text of the story, formatted using the Muffintext format
         
     next_point : string
         The name of the next point in the story/The key chorresponding to the next point as in the `points` dictionary in the `Book` object.

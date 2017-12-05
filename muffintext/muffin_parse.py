@@ -1,5 +1,5 @@
 from time import sleep
-from emb_text.embellish_types import *
+from muffintext.muffin_types import *
 from termcolor import colored
 
 
@@ -50,7 +50,7 @@ def format_text(text):
     return ftext_str
 
 
-def embellish_text(text):
+def bake(text):
     """This parses the text into blocks of text and functions, then formats the text"""
     raw_list = text.split('|')  # pipes break the text into blocks
     emb_list = []  # not self.parsed_list

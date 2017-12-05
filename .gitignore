@@ -35,9 +35,13 @@ nosetests.xml
 .project
 .pydevproject
 
-#tox
+# tox
 .tox
 *.egg-info
 scratch.txt
 .cache
-.vscode
+
+# vscode
+.vscode/*
+objectdb
+.vscode/.ropeproject/objectdb

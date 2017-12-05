@@ -2,6 +2,7 @@ from time import sleep
 from emb_text.embellish_types import *
 from termcolor import colored
 
+
 def format_text(text):
     """Formats text given to it
     % makes text red and bold

@@ -15,8 +15,9 @@ setuptools.setup(
 
     install_requires=["termcolor>1.0.0"],
 
-    setup_requires = ['pytest-runner'], #https://docs.pytest.org/en/latest/goodpractices.html#integrating-with-setuptools-python-setup-py-test-pytest-runner
-    tests_require = ['pytest', 'pytest-mock'],
+    # https://docs.pytest.org/en/latest/goodpractices.html#integrating-with-setuptools-python-setup-py-test-pytest-runner
+    setup_requires=['pytest-runner'],
+    tests_require=['pytest', 'pytest-mock'],
 
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',

@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="python_story",
-    version="0.1.0",
+    version="0.0.3",
     url="https://github.com/itsjoel/python-story",
 
     author="Joel Newman",
